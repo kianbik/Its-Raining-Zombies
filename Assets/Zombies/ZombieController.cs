@@ -15,10 +15,13 @@ public class ZombieController : MonoBehaviour
     Rigidbody rigidbody;
     Animator zombieAnimator;
    public PlayerController playerController;
+
     //boosts
     public bool hitGround;
     public bool gotUp;
     public bool followingPlayer;
+
+    public AudioSource audiosrc;
 
     // Start is called before the first frame update
     void Start()
@@ -35,10 +38,12 @@ public class ZombieController : MonoBehaviour
     {
         if (followingPlayer)
         {
-            transform.LookAt(playerController.gameObject.transform);
-            transform.position += transform.forward * walkSpeed * Time.deltaTime;
-            
-           // rigidbody.AddForce((playerController.gameObject.transform.position).normalized , ForceMode.Force);
+            Vector3 direction = playerController.transform.position - transform.position;
+            float magnitude = direction.magnitude;
+            direction.Normalize();
+            Vector3 velocity = direction * walkSpeed;
+            transform.LookAt(new Vector3(playerController.transform.position.x, transform.position.y, playerController.transform.position.z));
+            rigidbody.velocity = new Vector3(velocity.x, rigidbody.velocity.y, velocity.z);
 
         }
         if (zombieAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime > 0.7f && zombieAnimator.GetCurrentAnimatorStateInfo(0).IsName("Getting Up"))
@@ -46,7 +51,12 @@ public class ZombieController : MonoBehaviour
             zombieAnimator.SetBool("HitGround", false);
             zombieAnimator.SetBool("ReadyToFollow", true);
             followingPlayer = true;
+            audiosrc.Play();
         }
+    }
+    public void Kicked(float force)
+    {
+
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -56,29 +66,11 @@ public class ZombieController : MonoBehaviour
             hitGround = true;
             zombieAnimator.SetBool("HitGround", true);
         }
-       
-    }
-    private void OnControllerColliderHit(ControllerColliderHit hit)
-    {
-       
-                Rigidbody enemyRigidBody = hit.collider.attachedRigidbody;
-                if (enemyRigidBody != null)
-                {
-                    Vector3 forceDirection = hit.gameObject.transform.position - transform.position;
-                    forceDirection.y = 0;
-                    forceDirection.Normalize();
-                    enemyRigidBody.AddForceAtPosition(forceDirection * 1, transform.position, ForceMode.Impulse);
-         
-                }
-                if(hit.gameObject.tag == "AttackPoint")
+        if(collision.gameObject.tag == "Player")
         {
-
-            Vector3 forceDirection = transform.position - hit.gameObject.transform.position ;
-            forceDirection.y = 0;
-            forceDirection.Normalize();
-            rigidbody.AddForceAtPosition(forceDirection * 10000, hit.gameObject.transform.position, ForceMode.Impulse);
-            Debug.Log("Push");
-
+            Debug.Log("collided");
         }
+       
     }
+  
 }

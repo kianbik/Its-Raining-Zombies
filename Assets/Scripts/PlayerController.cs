@@ -7,14 +7,17 @@ public class PlayerController : MonoBehaviour
     //movement variables
     [SerializeField]
     float walkSpeed = 5;
+  
     [SerializeField]
     float InitialwalkSpeed = 5;
     [SerializeField]
     float runSpeed = 10;
     [SerializeField]
     float rotationSens = 4;
+    [SerializeField]
+    public float kickPower = 120;
 
-
+    
     //components
     PlayerController playerController;
     Rigidbody rigidbody;
@@ -23,6 +26,7 @@ public class PlayerController : MonoBehaviour
     // movement references
    public Vector2 inputVector = Vector2.zero;
     Vector3 moveDirection = Vector3.zero;
+    Vector3 moveDirectionY = Vector3.zero;
     float playerRotation;
     
     //kicking 
@@ -30,13 +34,14 @@ public class PlayerController : MonoBehaviour
     public float lastKickTimer;
     public float maxComboDelay = 2.0f;
     public bool canKick =true;
-    [SerializeField]
-    float kickPower = 4;
 
+    public AudioSource kickAudio;
     //boosts
     public bool speedBoost;
     public bool finalKick;
     public bool powerKicks;
+    public float speedBoostTimer = 20;
+    public float finalkickTimer = 20;
 
 
     //hash
@@ -44,6 +49,7 @@ public class PlayerController : MonoBehaviour
     public readonly int movementYHash = Animator.StringToHash("MovementY");
     public readonly int isKickingHash = Animator.StringToHash("IsKicking");
 
+    public Canvas GameOverCanvas;
     //pause
      public PauseMenuScript pausemenuCanvas;
     private void Awake()
@@ -69,23 +75,53 @@ public class PlayerController : MonoBehaviour
         }
         else walkSpeed = InitialwalkSpeed;
         moveDirection = transform.forward * inputVector.y;
+        moveDirectionY = transform.right * inputVector.x;
         Vector3 movementDirection = moveDirection * (walkSpeed * Time.deltaTime);
+        transform.position += movementDirection;
         if (speedBoost)
         {
             playerAnimator.SetFloat(movementXHash, inputVector.x *2);
             playerAnimator.SetFloat(movementYHash, inputVector.y *2);
+            InitialwalkSpeed =  10;
+            speedBoostTimer -= Time.deltaTime;
+            if(speedBoostTimer <= 0)
+            {
+                speedBoost = false;
+                InitialwalkSpeed = 5;
+                speedBoostTimer = 0;
+
+            }
         }
         else
         {
             playerAnimator.SetFloat(movementXHash, inputVector.x);
             playerAnimator.SetFloat(movementYHash, inputVector.y);
         }
-        transform.position += movementDirection;
-        Kick();
-        Rotate();
+        if (!finalKick)
+        {
+            Kick();
+
+            Rotate();
+       
+        }
         if ((playerInput.actions["Pause"].triggered)){
             pausemenuCanvas.Pause();
         }
+        if (finalKick)
+        {
+            playerAnimator.SetBool("FinalKick", true);
+            finalkickTimer -= Time.deltaTime;
+            if (finalkickTimer <= 0)
+            {
+                finalKick = false;
+              
+                finalkickTimer = 0;
+                playerAnimator.SetBool("FinalKick", false);
+               
+            }
+
+        }
+
 
 
     }
@@ -108,6 +144,7 @@ public class PlayerController : MonoBehaviour
 
         if ((playerInput.actions["Kick"].triggered) && canKick)
         {
+            kickAudio.Play();
             maxComboDelay = 2.0f;
             kickCounter++;
             canKick = false;
@@ -158,6 +195,7 @@ public class PlayerController : MonoBehaviour
             canKick = true;
 
         }
+        
     }
 
     private void Rotate()

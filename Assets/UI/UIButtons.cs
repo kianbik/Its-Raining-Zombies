@@ -52,6 +52,11 @@ public class UIButtons : MonoBehaviour
         
         SceneManager.LoadScene("Level1");
     }
+    public void OnMainMenuClicked()
+    {
+
+        SceneManager.LoadScene("MainMenu");
+    }
     public void OnLevel2Clicked()
     {
 
@@ -61,6 +66,11 @@ public class UIButtons : MonoBehaviour
     {
 
         SceneManager.LoadScene("Level3");
+    }
+    public void OnTestClicked()
+    {
+
+        SceneManager.LoadScene("ItemTest");
     }
 
 }

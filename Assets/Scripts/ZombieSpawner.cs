@@ -11,6 +11,9 @@ public class ZombieSpawner : MonoBehaviour
     public GameObject ZombiePrefab;
     public float spawnTimer = 10.0f;
     public float spawnRate = 10;
+
+    public AudioSource audiosrc;
+ 
     // Start is called before the first frame update
     void Start()
     {
@@ -32,6 +35,7 @@ public class ZombieSpawner : MonoBehaviour
     {
         Vector3 pos = center + new Vector3(Random.Range(-size.x / 2, size.x / 2), Random.Range(-size.y / 2, size.y / 2), Random.Range(-size.z / 2, size.z / 2));
         Instantiate(ZombiePrefab, pos, Quaternion.identity);
+        audiosrc.Play();
     }
     public void OnDrawGizmosSelected()
     {

@@ -13,6 +13,7 @@ TagManager:
   - PouchOfSand
   - Enemy
   - AttackPoint
+  - Explodabale
   layers:
   - Default
   - TransparentFX

@@ -25,20 +25,24 @@ public class Items : MonoBehaviour
         if(collision.gameObject.tag == "SpeedBoost")
         {
             playerController.speedBoost = true;
+            Destroy(collision.gameObject);
         }
         if (collision.gameObject.tag == "Freeze")
         {
             ground.FreezeGround();
-           
-            
+            Destroy(collision.gameObject);
+
+
         }
         if (collision.gameObject.tag == "AlmightyPush")
         {
-
+            collision.GetComponent<AlmightyPushController>().explode();
+            Destroy(collision.gameObject);
         }
         if (collision.gameObject.tag == "PowerKicks")
         {
-
+            playerController.kickPower = playerController.kickPower * 20;
+            Destroy(collision.gameObject);
         }
         if (collision.gameObject.tag == "PouchOfSand")
         {
@@ -46,7 +50,8 @@ public class Items : MonoBehaviour
         }
         if (collision.gameObject.tag == "ChakraBoost")
         {
-
+            playerController.finalKick = true;
+            Destroy(collision.gameObject);
         }
        // Destroy(collision.gameObject);
     }

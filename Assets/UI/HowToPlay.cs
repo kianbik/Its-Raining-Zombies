@@ -30,6 +30,6 @@ public class HowToPlay : MonoBehaviour
     void Update()
     {
         displayImage.sprite = gallery[i];
-        displayImage.GetComponent<Image>().SetNativeSize();
+        
     }
 }
